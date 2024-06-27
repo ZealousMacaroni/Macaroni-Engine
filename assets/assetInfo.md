@@ -1,0 +1,1 @@
+At the current moment, this is where your image assets that will be loaded into textures go. This file is okay to be deleted.
