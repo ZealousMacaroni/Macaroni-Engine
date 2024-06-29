@@ -7,12 +7,18 @@
 
 class Shader {
 public:
+    Shader(std::string vertName, std::string fragName) {
+        compileShader(vertName, GL_VERTEX_SHADER, vertexID);
+        compileShader(fragName, GL_FRAGMENT_SHADER, fragmentID);
+        compileShaderProgram();
+    }
+
     void compileShader(std::string name, unsigned int type, unsigned int &id) {
         std::string source;
         std::string shadersFolderPath = "shaders/";
         
         source = getContentFromFile(shadersFolderPath + name);
-        
+                
         const char* code = source.c_str();
 
         id = glCreateShader(type);
@@ -22,14 +28,14 @@ public:
         glGetShaderiv(id, GL_COMPILE_STATUS, &success);
         if(!success) {
             glGetShaderInfoLog(id, 512, NULL, infoLog);
-            std::cout << "Shader " << type << " compilation failed. Info Log: " << infoLog << std::endl;
+            std::cout << infoLog << std::endl;
         }
 
         infoLog[0] = '\0';
         success = 0;
     }
 
-    void compileProgram() {
+    void compileShaderProgram() {
         programID = glCreateProgram();
         glAttachShader(programID, vertexID);
         glAttachShader(programID, fragmentID);
@@ -42,11 +48,11 @@ public:
 
         if (!success) {
             glGetProgramInfoLog(programID, 512, NULL, infoLog);
-            std::cout << "Program linking failed. Info Log: " <<infoLog << std::endl;  
+            std::cout << infoLog << std::endl;  
         }
     }
 
-    void useProgram() {
+    void useShader() {
         glUseProgram(programID);
     }
 
