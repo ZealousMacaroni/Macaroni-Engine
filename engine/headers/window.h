@@ -3,36 +3,23 @@
 
 class Window {
 public:
-    Window(int wid, int hght, const char* name, int swap_rate) : width(wid), height(hght), title(name), swap(swap_rate) {glfwInit();}
+    Window(int width, int height, const char* title, int swap, int major_version, int minor_version, int profile) {
+        glfwInit();
 
-    void setupWindow() {
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
+
         window = glfwCreateWindow(width, height, title, NULL, NULL);
+
         glfwMakeContextCurrent(window);
+        
         glfwSwapInterval(swap);
-    }
-
-    void setVersion(unsigned int major, unsigned int minor) {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
-    }
-
-    void modifyWindowAttribute(unsigned int attribute, unsigned int value) {
-        glfwWindowHint(attribute, value);
     }
 
     GLFWwindow* getWindow() {
         return window;
     }
-
-    int getWidth() {
-        return width;
-    }
-
-    int getHeight() {
-        return height;
-    }
 private:
     GLFWwindow* window;
-    int width, height, swap;
-    const char* title;
 };
