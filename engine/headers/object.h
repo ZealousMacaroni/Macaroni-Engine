@@ -8,12 +8,8 @@ class Vertex {
 public:
     Vertex(float posv1, float posv2, float posv3, float colv1, float colv2, float colv3) : vertex{posv1, posv2, posv3, colv1, colv2, colv3} {};
 
-    void setVector(bool targetPosition, float v1, float v2, float v3) {
-        if (targetPosition) {
-            vertex[0] = v1; vertex[1] = v2; vertex[2] = v3;
-        } else {
-            vertex[3] = v1; vertex[4] = v2; vertex[5] = v3;
-        }
+    float* get() {
+        return vertex;
     }
 private:
     float vertex[6];
@@ -21,35 +17,38 @@ private:
 
 class VertexArrayObject {
 public:
-    VertexArrayObject(unsigned int count) {
-        glGenVertexArrays(count, &id);
+    VertexArrayObject() {
+        glGenVertexArrays(1, &id);
+        bind();
     }
 
     void bind() {
         glBindVertexArray(id);
     }
 
+    void unbind() {
+        glBindVertexArray(0);
+    }
+
     ~VertexArrayObject() {
         glDeleteVertexArrays(1, &id);
     }
+
 private:
     unsigned int id;
 };
 
 class Buffer {
 public:
-    Buffer(unsigned int buffer_type, bool bind) {
+    Buffer(unsigned int buffer_type): type(buffer_type) {
         glGenBuffers(1, &id);
-        if (bind) {
-            bindBuffer();
-        }
     }
 
-    void bindBuffer() {
+    void bind() {
         glBindBuffer(type, id);
     }
 
-    void unbindBuffer() {
+    void unbind() {
         glBindBuffer(type, 0);
     }
 
@@ -61,53 +60,52 @@ private:
     unsigned int id, type;
 };
 
-class VertexBuffer : Buffer {
+class VertexBuffer : public Buffer {
 public:
-    VertexBuffer(unsigned int buffer_type, bool bind, int vertices) : Buffer(buffer_type, bind), n_of_vertices(vertices) {
-        data = new float[vertices]; 
+    VertexBuffer(int vertices) : Buffer(GL_ARRAY_BUFFER), n_of_floats(vertices * 6) {
+        data = new float[n_of_floats]; 
     };
 
-    float* get() {
-        return data;
+    void intizalizeVertexElements(Vertex v1, Vertex v2, Vertex v3) {
+        setElement(0, v1);
+        setElement(1, v2);
+        setElement(2, v3);
+    }
+
+    void initializeData() {
+        bind();
+        glBufferData(GL_ARRAY_BUFFER, n_of_floats * 4, data, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, 0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 6, (void*)(sizeof(float) * 3));
+        glEnableVertexAttribArray(1);
+    }
+
+    void setDataAsnullptr() {  
+        data = nullptr;
     }
 
     ~VertexBuffer() {
-        delete[] data;
+        if (data != nullptr) {
+            delete[] data;
+        }
     }
 
 private:
+    void setElement(int this_dataIndex, Vertex v) {
+        float* contents = v.get();
+
+        this_dataIndex *= 6;
+        
+        int index = this_dataIndex + 6;
+        
+        for (int vert_index = 0; this_dataIndex < (index); this_dataIndex++) {
+            data[this_dataIndex] = contents[vert_index]; vert_index++;
+        }
+    }
+
     float* data;
-    int n_of_vertices;
-};
-
-class IndexBuffer : Buffer {
-public:
-    IndexBuffer(unsigned int buffer_type, bool bind, int vertices) : Buffer(buffer_type, bind), n_of_vertices(vertices) {
-        data = new int[vertices]; 
-    };
-
-    int* get() {
-        return data;
-    }
-
-    ~IndexBuffer() {
-        delete[] data;
-    }
-
-private:
-    int* data;
-    int n_of_vertices;
-};
-
-class Object {
-public:
-    VertexArrayObject VAO;
-    VertexBuffer Buffer;
-    IndexBuffer IBO;
-    Vertex v1, v2, v3;
-    Texture tex;
-    Shader shader;
-    
-private:
-    bool useTexture;
+    int n_of_floats;
 };
