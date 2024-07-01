@@ -10,3 +10,5 @@ The install script uses the Homebrew package manager. If you would like to unsin
 After you write your code in main.cpp, to compile, run the command: "./engine/build.sh" to run the shell script that will compile and run the code!.
 
 If you get the error "permission denied", enter the command: "chmod +x engine/build.sh" to give executable permissions to the shell script.
+
+If you have any questions please create an issue.
