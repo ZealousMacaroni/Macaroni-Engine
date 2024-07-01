@@ -7,5 +7,3 @@ The install script uses the Homebrew package manager. If you would like to unsin
 After you write your code in main.cpp, to compile, run the command: "./engine/build.sh". This will compile and run your code!
 
 If you get the error "permission denied", enter the command: "chmod +x engine/build.sh" to give executable permissions to the shell script.
-
-6-27-24: object.h script is unfinished
