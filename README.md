@@ -1,1 +1,1 @@
-A new game engine project for my learning.
+Macaroni Engine is a game engine for creating simple 3D games in OpenGL
